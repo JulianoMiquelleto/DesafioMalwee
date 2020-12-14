@@ -8,7 +8,7 @@
 
 
 ###### URL para API
-[Link para API](https://desafiomalweeapi.azurewebsites.net/)
+[Link para API](https://desafiomalweeapi.azurewebsites.net/cliente)
 
 
 ## Usuários(fornecedores) para acesso
