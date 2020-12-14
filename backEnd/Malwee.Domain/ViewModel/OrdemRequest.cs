@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Malwee.Api.ViewModel
+namespace Malwee.Domain.ViewModel
 {
-    public class OrderRequest
+    public class OrdemRequest
     {
         public EnumTipoServico Tipo { get; set; }
         public decimal Preco { get; set; }

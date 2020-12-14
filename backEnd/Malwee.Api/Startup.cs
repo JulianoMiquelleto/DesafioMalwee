@@ -8,11 +8,15 @@ using Malwee.Repositories.Contracts;
 using Malwee.Repositories;
 using Malwee.Services;
 using Malwee.Services.Contracts;
+using Microsoft.EntityFrameworkCore;
+using Malwee.Repositories.context;
+using Simplify.Config;
 
 namespace Malwee.Api
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -23,18 +27,48 @@ namespace Malwee.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.AllowAnyOrigin()
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader();
+                                  });
+            });
+
             services.AddControllers()
                 .AddNewtonsoftJson(options => options.UseMemberCasing())
                 .AddNewtonsoftJson(options => options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)
                 .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+            var settings = Configuration.GetSection("ConnectionStrings");
+            services.Configure<ConnectionString>(settings);
+
             //##### DI servicos ###########
-            services.AddSingleton<IOrderService, OrderService>();
+            services.AddScoped<IOrdemService, OrdemService>();
+            services.AddScoped<IClienteService, ClienteService>();
+            services.AddScoped<IFornecedorService, FornecedorService>();
+           
 
             //##### DI repos ###########
-            services.AddSingleton<IFornecedorRepository, FornecedorRepository>();
-            services.AddSingleton<IClienteRepository, ClienteRepository>();
-            services.AddSingleton<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrdemRepository, OrdemRepository>();
+            services.AddScoped<IFornecedorRepository, FornecedorRepository>();
+            services.AddScoped<IClienteRepository, ClienteRepository>();
+           
+
+            var secretKeys = settings.Get<ConnectionString>();
+
+            services.AddDbContext<OrdemContext>(
+           options => options.UseSqlServer(secretKeys.Conn));
+
+           // services.AddDbContext<ClienteContext>(
+           // options => options.UseSqlServer(secretKeys.Conn));
+
+           // services.AddDbContext<FornecedorContext>(
+           //options => options.UseSqlServer(secretKeys.Conn));
+
 
         }
 
@@ -45,6 +79,8 @@ namespace Malwee.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseRouting();
 

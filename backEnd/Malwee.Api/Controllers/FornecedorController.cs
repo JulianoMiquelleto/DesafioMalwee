@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using Malwee.Domain.ViewModel;
+using Malwee.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Malwee.Api.Controllers
@@ -12,9 +11,25 @@ namespace Malwee.Api.Controllers
     [Route("[controller]")]
     public class FornecedorController : Controller
     {
-        public IActionResult Index()
+
+        private readonly IFornecedorService fornService;
+        public FornecedorController(IFornecedorService pFornService)
         {
-            return View();
+            fornService = pFornService;
+        }
+
+        [HttpGet("{userName}")]
+        public  async Task<ActionResult<FornecedorResponse>> getByUser(string userName)
+        {
+            try
+            {
+                var forn = fornService.getByUser(userName.Trim());
+                return Ok(forn);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ClientErrorData());
+            }
         }
     }
 }

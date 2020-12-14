@@ -6,163 +6,176 @@ import {
     MDBRow, MDBCol
 } from "mdbreact";
 import NovaOrdem from './novaOrdem';
-import { checkCookie } from '../utils/util'
+import { apiMalwee, tipoServico } from '../api/config';
+
 class Ordens extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
             modalOrdem: false,
-            salvar: false
+            dados: []
         }
         this.toogleModal = this.toogleModal.bind(this)
         this.pesquisar = this.pesquisar.bind(this)
-        this.submitForm = this.submitForm.bind(this)
+        this.onInputChange = this.onInputChange.bind(this);
     }
     componentDidMount() {
-        let user = checkCookie();
-        //console.log(user);
+        //this.pesquisar();
+
     }
     toogleModal() {
         this.setState({ modalOrdem: !this.state.modalOrdem })
     }
     pesquisar() {
-        console.log('pesquisar')
+
+        apiMalwee.post('ordem/pesquisaOrdens', this.state)
+            .then(response => {
+                this.setState({ dados: response.data.ordens })
+            })
+            .catch(error => {
+                console.log(error);
+            })
     }
-    submitForm(values) {
-        //this.setState({ values })
-        console.log(values)
+
+    renderTable(ordem, index) {
+        return (
+            <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{ordem.Cliente}</td>
+                <td>{ordem.Bairro}</td>
+                <td>{ordem.Cidade}</td>
+                <td>{ordem.Uf}</td>
+                <td>{ordem.Tipo}</td>
+                <td>{ordem.Valor.toFixed(2)}</td>
+                <td>{ordem.Data}</td>
+            </tr>
+        )
     }
+    onInputChange(event) {
+        this.setState({
+            [event.target.name]: event.target.value
+        });
+    }
+
     render() {
         return (
             <>
-                <Row className="pt-lg-5 pl-lg-5">
-                    <Col md="8"></Col>
-                    <Col md="4">
-                        <Button variant="primary" onClick={() => this.toogleModal()} size="lg">Nova Ordem de serviço</Button>
-                    </Col>
-                </Row>
-                <Row className="pt-lg-5 pl-lg-5">
-                    <Col md="12"></Col>
-                </Row>
+               <Table>
+                    <Row >
+                        <Col md="8"></Col>
+                        <Col md="4">
+                            <Button variant="primary" onClick={() => this.toogleModal()} size="lg">Nova Ordem de serviço</Button>
+                        </Col>
+                    </Row>
+                    <Row >
+                        <Col md="12"></Col>
+                    </Row>
+                    <Row>
+                        <Col md="3" sm="auto"><strong>Data Início</strong>
+                            <Form.Control
+                                required onChange={this.onInputChange}
+                                type="date" name="DataInicio"
+                            />
+                        </Col>
+                        <Col md="3" sm="12" ><strong>Data Fim</strong>
+                            <Form.Control
+                                required onChange={this.onInputChange}
+                                type="date" name="DataFim"
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md="4" sm="12"><strong>Cliente</strong>
+                            <Form.Control
+                                required
+                                type="text"
+                                onChange={this.onInputChange} name="Cliente"
+                                placeholder="Cliente"
+                            />
+                        </Col>
+                        <Col md="3" sm="12"><strong>Cidade</strong>
+                            <Form.Control
+                                required
+                                type="text"
+                                onChange={this.onInputChange} name="Cidade"
+                                placeholder="Cidade"
+                            />
+                        </Col>
+                        <Col md="3" sm="12"><strong>Bairro</strong>
+                            <Form.Control
+                                required
+                                type="text"
+                                onChange={this.onInputChange} name="Bairro"
+                                placeholder="Bairro"
+                            />
+                        </Col>
+                        <Col md="2" sm="12"><strong>UF</strong>
+                            <Form.Control
+                                required
+                                type="text"
+                                onChange={this.onInputChange} name="Uf"
+                                placeholder="UF"
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md="4" sm="12"><strong>Tipo</strong>
+                            <Form.Control as="select" placeholder="Serviço">
+                                {
+                                    tipoServico.map((option, index) => {
+                                        return (<option key={option.id} value={option.id}>{option.value}</option>)
+                                    })
+                                }
+                            </Form.Control>
+                        </Col>
+                        <Col md="3" sm="12"><strong>Valor Mínimo</strong>
+                            <Form.Control
+                                required
+                                type="number"
+                                onChange={this.onInputChange} name="ValorMinimo"
+                                placeholder="Valor Min"
+                            />
+                        </Col>
+                        <Col md="3" sm="12"><strong>Valor Máximo</strong>
+                            <Form.Control
+                                required
+                                type="number"
+                                onChange={this.onInputChange} name="ValorMaximo"
+                                placeholder="Valor Max"
+                            />
+                        </Col>
+                        <Col md="2" sm="12">
+                            <br />
+                            <Button variant="primary" onClick={() => this.pesquisar()} size="md">Pesquisar</Button>
 
-                <Row>
-                    <Col md="3" ><strong>Data Início</strong></Col>
-                    <Col md="3" ><strong>Data Fim</strong></Col>
-                    <Col md="6" ></Col>
-                </Row>
-                <Row >
-                    <Col md="3"><Form.Control
-                        required
-                        type="date"
-                    /></Col>
-                    <Col md="3"><Form.Control
-                        required
-                        type="date"
-                    /></Col>
-                    <Col md="6"></Col>
-                </Row>
-                <Row>
-                    <Col md="4"><strong>Cliente</strong></Col>
-                    <Col md="3"><strong>Cidade</strong></Col>
-                    <Col md="3"><strong>Bairro</strong></Col>
-                    <Col md="2"><strong>UF</strong></Col>
-                </Row>
-                <Row>
-                    <Col md="4">
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="Cliente"
-                        />
-                    </Col>
-                    <Col md="3">
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="Cidade"
-                        />
-                    </Col>
-                    <Col md="3">
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="Bairro"
-                        />
-                    </Col>
-                    <Col md="2">
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="UF"
-                        />
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col md="4"><strong>Tipo</strong></Col>
-                    <Col md="3"><strong>Valor Mínimo</strong></Col>
-                    <Col md="3"><strong>Valor Máximo</strong></Col>
-                </Row>
-                <Row>
-                    <Col md="4">
-                        <Form.Control as="select" placeholder="Serviço">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </Form.Control>
-                    </Col>
-                    <Col md="3">
-                        <Form.Control
-                            required
-                            type="number"
-                            placeholder="Valor Min"
-                        />
-                    </Col>
-                    <Col md="3">
-                        <Form.Control
-                            required
-                            type="number"
-                            placeholder="Valor Max"
-                        />
-                    </Col>
-                    <Col md="2">
-                        <Button variant="primary" onClick={() => this.pesquisar()} size="md">Pesquisar</Button>
-                    </Col>
-                </Row>
-                <hr />
-                <Row>
-                    <Col md="12">
-                        <Table striped bordered hover responsive>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Cliente</th>
-                                    <th>Bairro</th>
-                                    <th>Cidade</th>
-                                    <th>Uf</th>
-                                    <th>Data</th>
-                                    <th>Serviço</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>@mdo</td>
-                                    <td>@mdo</td>
-                                    <td>Otto</td>
-                                    <td>@mdo</td>
-                                    <td>@mdo</td>
-                                </tr>
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>
+                        </Col>
+                    </Row>
+                    <hr />
+                    <Row>
+                        <Col md="12" sm="auto">
+                            <div style={{ overflowY: 'scroll', maxHeight: '300px' }}>
+                                <Table striped bordered hover responsive >
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Cliente</th>
+                                            <th>Bairro</th>
+                                            <th>Cidade</th>
+                                            <th>Estado</th>
+                                            <th>Tipo de serviço</th>
+                                            <th>Valor</th>
+                                            <th>Data atendimento</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {this.state.dados.map(this.renderTable)}
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Col>
+                    </Row>
+                </Table>
 
                 <MDBModal isOpen={this.state.modalOrdem} toggle={this.toogleModal} size="lg" centered>
                     <MDBModalHeader toggle={this.toogleModal}> <span>Nova ordem de serviço</span>
@@ -170,7 +183,7 @@ class Ordens extends Component {
                     <MDBModalBody>
                         <MDBRow>
                             <MDBCol md="12">
-                                <NovaOrdem onFormSubmit={this.submitForm} />
+                                <NovaOrdem />
                             </MDBCol>
                         </MDBRow>
                     </MDBModalBody>

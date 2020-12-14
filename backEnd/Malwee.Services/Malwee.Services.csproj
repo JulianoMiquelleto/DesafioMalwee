@@ -4,4 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Malwee.Domain\Malwee.Domain.csproj" />
+    <ProjectReference Include="..\Malwee.Repositories\Malwee.Repositories.csproj" />
+  </ItemGroup>
+
 </Project>

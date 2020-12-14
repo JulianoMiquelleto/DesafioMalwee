@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Form, Button, Col, Row } from 'react-bootstrap'
+import { apiMalwee } from '../api/config';
 
 class Login extends Component {
 
@@ -17,31 +18,41 @@ class Login extends Component {
   }
   login() {
 
-   
-    window.localStorage.setItem('stgDesafioMalwee', JSON.stringify( this.state));
-    console.log(this.props.history.push('/ordens'))
+    console.log(this.state.fornecedor)
+    if (this.state.fornecedor != '' || this.state.fornecedor != undefined) {
+      apiMalwee.get(`fornecedor/${this.state.fornecedor}`)
+        .then(res => {
+          if (res.status === 200) {
+            const forn = res.data;
+            window.localStorage.setItem('stgDesafioMalwee', JSON.stringify(forn));
+            this.props.history.push('/ordens');
+          } else {
+            alert('Login ou senha não identificado.')
+          }
+        })
+    }else{
+      alert('Login ou senha obrigatório')
+    }
   }
+
   render() {
     return (
       <>
         <Row>
           <Col md="4"></Col>
           <Col md="4">
-            <Form>
+            <Form onSubmit={() => this.valida}>
               <Form.Group controlId="formBasicEmail">
                 <Form.Label><strong>Fornecedor</strong></Form.Label>
-                <Form.Control type="text" placeholder="Nome" onChange={this.onInputChange} name="fornecedor" />
-                <Form.Text className="text-muted">
-                  Nome do fornecedor
-              </Form.Text>
-              </Form.Group>
+                <Form.Control type="text" placeholder="Nome" required onChange={this.onInputChange} name="fornecedor" />
 
+              </Form.Group>
               <Form.Group controlId="formBasicPassword">
                 <Form.Label><strong>Senha</strong></Form.Label>
-                <Form.Control type="password" placeholder="Senha" onChange={this.onInputChange} name="senha" />
+                <Form.Control type="password" placeholder="Senha" required onChange={this.onInputChange} name="senha" />
               </Form.Group>
-              <Button variant="primary" onClick={this.login} type="button">
-                Acessar
+              <Button variant="primary" size="lg" type="button" onClick={this.login}>
+                Acessar 
               </Button>
             </Form>
           </Col>

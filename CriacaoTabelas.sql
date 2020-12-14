@@ -12,10 +12,11 @@ GO
 create Table Fornecedor
 (
 	Id int identity,
-	Nome varchar(200)
+	Nome varchar(200),
+	Usuario varchar(20)
 )
 GO
-create table ServicoPrestado
+create table Ordens
 (
 	Id int not null identity,
 	Fk_Cliente int not null,
@@ -24,19 +25,20 @@ create table ServicoPrestado
 	Estado varchar(2),
 	TipoServico varchar(50),
 	Valor decimal(18,2) not null,
-	DataAtendimento datetime not null
+	DataAtendimento datetime not null,
+	Descricao varchar(max)
 )
 
 insert into Cliente(Nome,Bairro,Cidade,Estado)
 values('Juliano Miquelleto','Novo mundo','Curitiba','PR'),
-('Suelyn Lopes','Areias','Camboriu','PR'),
+('Suelyn Lopes','Areias','Camboriu','SC'),
 ('Maria Medeiros','Bigorrilho','Curitiba','PR'),
 ('José padilha','Portão','Curitiba','PR'),
-('Victor Almeida','Santa Regina','Camboriu','PR'),
+('Victor Almeida','Santa Regina','Camboriu','SC'),
 ('Ricardo Alvarez','Agua Verde','Curitiba','PR')
 GO
 insert into Fornecedor
 values ('Aguas de março encanamento'),('Miquelleto Terraplanagem'),
-('Valdir eletrecista'),('Rei do ar - Ar condicionado')
+('Valdir eletricista'),('Rei do ar - Ar condicionado')
 
 

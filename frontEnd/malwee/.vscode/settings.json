@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/c975ff74-57fc-4245-87b1-d5c1f61df051/resourceGroups/Malwee/providers/Microsoft.Web/sites/desafioMalwee",
+    "appService.deploySubpath": "src"
+}
